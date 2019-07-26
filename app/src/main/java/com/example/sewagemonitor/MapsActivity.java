@@ -20,6 +20,9 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -76,6 +79,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private final String channel_id="personal notification";
 
     NotificationCompat.Builder notification;
+    private DrawerLayout drawer;
 
 
     @Override
@@ -86,6 +90,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         string1=(TextView)findViewById(R.id.textView3);
         string2=(TextView)findViewById(R.id.textView4);
         string3=(TextView)findViewById(R.id.textView5);
+
+        Toolbar toolbar=findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
+        drawer=findViewById(R.id.drawer_layout);
+
+        ActionBarDrawerToggle toggle=new ActionBarDrawerToggle(this, drawer,toolbar,R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close);
+        toggle.setDrawerIndicatorEnabled(true);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
 
         notification = new NotificationCompat.Builder(this,channel_id);
 
