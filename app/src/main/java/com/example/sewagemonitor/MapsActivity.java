@@ -14,16 +14,21 @@ import android.location.Location;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -57,7 +62,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
+public class MapsActivity extends FragmentActivity implements NavigationView.OnNavigationItemSelectedListener,OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
@@ -77,7 +82,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private TextView string1, string2, string3;
     private static final int  notificationid=1223;
     private final String channel_id="personal notification";
-
+    private int flag=0;
     NotificationCompat.Builder notification;
     private DrawerLayout drawer;
 
@@ -100,7 +105,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         toggle.setDrawerIndicatorEnabled(true);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-
+        //toolbar.setTitle("Home");
+       NavigationView navigationView=findViewById(R.id.nav_view);
+       navigationView.setNavigationItemSelectedListener(this);
         notification = new NotificationCompat.Builder(this,channel_id);
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
@@ -111,6 +118,62 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+       /* if(savedInstanceState==null){
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new critical()).commit();
+        navigationView.setCheckedItem(R.id.nav_critical);
+        }*/
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(drawer.isDrawerOpen(GravityCompat.START)){
+            drawer.closeDrawer(GravityCompat.START);
+        }
+        else if(flag==1)
+        {
+            Intent intent = new Intent( MapsActivity.this,MapsActivity.class );
+            startActivity(intent);
+            MapsActivity.this.finish();
+            flag=0;
+        }
+        else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.nav_critical:
+                Toast.makeText(this,"this is critical",Toast.LENGTH_SHORT).show();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new critical()).commit();
+                flag=1;
+                break;
+            case R.id.nav_informative:
+                Toast.makeText(this,"this is informative",Toast.LENGTH_SHORT).show();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new informative()).commit();
+                flag=1;
+                break;
+            case R.id.nav_normal:
+                Toast.makeText(this,"this is normal",Toast.LENGTH_SHORT).show();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new normal()).commit();
+                flag=1;
+                break;
+            case R.id.nav_statistics:
+                Toast.makeText(this,"this is statistics",Toast.LENGTH_SHORT).show();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new statistics()).commit();
+                flag=1;
+                break;
+            case R.id.nav_ground:
+                Toast.makeText(this,"this is Ground",Toast.LENGTH_SHORT).show();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new ground()).commit();
+                flag=1;
+                break;
+        }
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 
     @Override
@@ -225,8 +288,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 longitude = user.getLongitude();
                                 wlevel= user.getWlevel();
 
+//                    String city="";
+//                    Geocoder geocoder=new Geocoder(MapsActivity.this, Locale.getDefault());
+//                    try {
+//                        List<Address> addresses=geocoder.getFromLocation(latitude,longitude,1);
+//                        String address=addresses.get(0).getAddressLine(0);
+//                        city=addresses.get(0).getLocality();
+//                        Log.d("Mylo","Complete address:"+ addresses.toString());
+//                        Log.d("Mylo","address:"+ address);
+//                        //addresscom.setText("Destination Address:\n"+address+"\n"+"Distance= "+(int)smallest+"m");
+//                        mRef.child(ds.getKey()).child("Address").setValue(address);
+//
+//
+//
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
 
-                                if(wlevel<=25) {
+
+                                if(wlevel==1) {
                                     MarkerOptions markerOptions1 = new MarkerOptions();
                                     markerOptions1.position(new LatLng(latitude,longitude));
                                     markerOptions1.title("Normal");
@@ -237,7 +317,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
                                 }
-                                else if(wlevel>25&& wlevel<=50) {
+                                else if(wlevel==2) {
                                     MarkerOptions markerOptions2 = new MarkerOptions();
                                     markerOptions2.position(new LatLng(latitude,longitude));
                                     markerOptions2.title("Informative");
@@ -248,7 +328,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
                                 }
-                                else {
+                                else if(wlevel==3) {
 
                                     MarkerOptions markerOptions3 = new MarkerOptions();
                                     markerOptions3.position(new LatLng(latitude,longitude));
@@ -257,7 +337,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     markerOptions3.snippet("level = "+wlevel);
                                     mMap.addMarker(markerOptions3);
                                     critical++;
-                                    //createNotificationChannel();
+                                    createNotificationChannel();
 
 
                                     notification.setSmallIcon(R.drawable.swachh);
@@ -266,16 +346,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     notification.setContentTitle("Alert!");
                                     notification.setContentText(critical+" Sewers in critical condition, click to get location.");
                                     notification.setPriority(NotificationCompat.PRIORITY_DEFAULT);
-                                    Intent intent = new Intent(MapsActivity.this, MapsActivity.class);
-                                    PendingIntent pendingIntent = PendingIntent.getActivity(MapsActivity.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                                    Intent intent = new Intent(MapsActivity.this, critical.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    PendingIntent pendingIntent = PendingIntent.getActivity(MapsActivity.this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+                                    notification.addAction(R.drawable.ic_sms_black_24dp,"Yes",pendingIntent);
                                     notification.setContentIntent(pendingIntent);
 
                                     notification.setAutoCancel(true);
                                     NotificationManagerCompat notificationManagerCompat=NotificationManagerCompat.from(MapsActivity.this);
                                     notificationManagerCompat.notify(notificationid,notification.build());
-
-
-
 
                                 }
                     LatLng LatLng = new LatLng(latitude,longitude);
@@ -303,7 +382,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     }
-    /*public void createNotificationChannel(){
+    public void createNotificationChannel(){
         if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O) {
             CharSequence name = "Personal notification";
             String description = "Include all personal notification";
@@ -315,7 +394,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
 
-    }*/
+    }
 
 
 
