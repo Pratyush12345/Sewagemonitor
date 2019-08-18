@@ -5,6 +5,7 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -19,6 +20,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
@@ -85,6 +87,8 @@ public class MapsActivity extends FragmentActivity implements NavigationView.OnN
     private int flag=0;
     NotificationCompat.Builder notification;
     private DrawerLayout drawer;
+    String type="default";
+    Toolbar toolbar;
 
 
     @Override
@@ -92,11 +96,27 @@ public class MapsActivity extends FragmentActivity implements NavigationView.OnN
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
+        type = getIntent().getStringExtra("From");
+
+        //type = "notifyFrag";
+        //Toast.makeText(MapsActivity.this,type, Toast.LENGTH_LONG).show();
+        if (type != null) {
+
+            switch (type) {
+                case "notifyFrag":
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new critical()).commit();
+
+                    break;
+            }
+        }
+
+
         string1=(TextView)findViewById(R.id.textView3);
         string2=(TextView)findViewById(R.id.textView4);
         string3=(TextView)findViewById(R.id.textView5);
 
-        Toolbar toolbar=findViewById(R.id.toolbar);
+        toolbar=findViewById(R.id.toolbar);
+        toolbar.setTitle("Home");
         //setSupportActionBar(toolbar);
         drawer=findViewById(R.id.drawer_layout);
 
@@ -106,8 +126,8 @@ public class MapsActivity extends FragmentActivity implements NavigationView.OnN
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         //toolbar.setTitle("Home");
-       NavigationView navigationView=findViewById(R.id.nav_view);
-       navigationView.setNavigationItemSelectedListener(this);
+           NavigationView navigationView=findViewById(R.id.nav_view);
+           navigationView.setNavigationItemSelectedListener(this);
         notification = new NotificationCompat.Builder(this,channel_id);
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
@@ -148,26 +168,31 @@ public class MapsActivity extends FragmentActivity implements NavigationView.OnN
         switch (item.getItemId()){
             case R.id.nav_critical:
                 Toast.makeText(this,"this is critical",Toast.LENGTH_SHORT).show();
+                toolbar.setTitle("Critical Sewers");
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new critical()).commit();
                 flag=1;
                 break;
             case R.id.nav_informative:
                 Toast.makeText(this,"this is informative",Toast.LENGTH_SHORT).show();
+                toolbar.setTitle("Informative Sewers");
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new informative()).commit();
                 flag=1;
                 break;
             case R.id.nav_normal:
                 Toast.makeText(this,"this is normal",Toast.LENGTH_SHORT).show();
+                toolbar.setTitle("Normal Sewers");
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new normal()).commit();
                 flag=1;
                 break;
             case R.id.nav_statistics:
                 Toast.makeText(this,"this is statistics",Toast.LENGTH_SHORT).show();
+                toolbar.setTitle("Statistics");
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new statistics()).commit();
                 flag=1;
                 break;
             case R.id.nav_ground:
                 Toast.makeText(this,"this is Ground",Toast.LENGTH_SHORT).show();
+                toolbar.setTitle("Ground Level Sewers");
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new ground()).commit();
                 flag=1;
                 break;
@@ -215,6 +240,7 @@ public class MapsActivity extends FragmentActivity implements NavigationView.OnN
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED) {
             buildGoogleApiClient();
             mMap.setMyLocationEnabled(false);
@@ -231,8 +257,10 @@ public class MapsActivity extends FragmentActivity implements NavigationView.OnN
                 .build();
         client.connect();
     }
+
     @Override
     public void onLocationChanged(Location location) {
+
 
         lastLocation = location;
 
@@ -311,7 +339,7 @@ public class MapsActivity extends FragmentActivity implements NavigationView.OnN
                                     markerOptions1.position(new LatLng(latitude,longitude));
                                     markerOptions1.title("Normal");
                                     markerOptions1.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                                    markerOptions1.snippet("level = "+wlevel);
+                                    //markerOptions1.snippet("level = "+wlevel);
                                     mMap.addMarker(markerOptions1);
                                     normal++;
 
@@ -322,7 +350,7 @@ public class MapsActivity extends FragmentActivity implements NavigationView.OnN
                                     markerOptions2.position(new LatLng(latitude,longitude));
                                     markerOptions2.title("Informative");
                                     markerOptions2.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
-                                    markerOptions2.snippet("level = "+wlevel);
+                                    //markerOptions2.snippet("level = "+wlevel);
                                     mMap.addMarker(markerOptions2);
                                     informative++;
 
@@ -334,27 +362,42 @@ public class MapsActivity extends FragmentActivity implements NavigationView.OnN
                                     markerOptions3.position(new LatLng(latitude,longitude));
                                     markerOptions3.title("Critical");
                                     markerOptions3.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-                                    markerOptions3.snippet("level = "+wlevel);
+                                    //markerOptions3.snippet("level = "+wlevel);
                                     mMap.addMarker(markerOptions3);
                                     critical++;
-                                    createNotificationChannel();
 
 
-                                    notification.setSmallIcon(R.drawable.swachh);
-                                    notification.setTicker("Regarding sewer in Jodhpur");
-                                    notification.setWhen(System.currentTimeMillis());
-                                    notification.setContentTitle("Alert!");
-                                    notification.setContentText(critical+" Sewers in critical condition, click to get location.");
-                                    notification.setPriority(NotificationCompat.PRIORITY_DEFAULT);
-                                    Intent intent = new Intent(MapsActivity.this, critical.class);
-                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                    PendingIntent pendingIntent = PendingIntent.getActivity(MapsActivity.this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-                                    notification.addAction(R.drawable.ic_sms_black_24dp,"Yes",pendingIntent);
-                                    notification.setContentIntent(pendingIntent);
+                                    type = getIntent().getStringExtra("From");
+                                        if(type!=null){
+                                        switch(type) {
+                                            case "notifyFrag": break;
+                                            }
+                                        }else {
+                                            createNotificationChannel();
 
-                                    notification.setAutoCancel(true);
-                                    NotificationManagerCompat notificationManagerCompat=NotificationManagerCompat.from(MapsActivity.this);
-                                    notificationManagerCompat.notify(notificationid,notification.build());
+
+                                            notification.setSmallIcon(R.drawable.logo);
+                                            notification.setTicker("Regarding sewer in Jodhpur");
+                                            notification.setWhen(System.currentTimeMillis());
+                                            notification.setContentTitle("Alert!");
+                                            notification.setContentText(critical + " Sewers in critical condition, click to get location.");
+                                            notification.setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+                                            Intent intent = new Intent(MapsActivity.this, MapsActivity.class);
+                                            intent.putExtra("From", "notifyFrag");
+                                            intent.putExtra("value",1);
+                                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                            //startActivity(intent);
+                                            PendingIntent pendingIntent = PendingIntent.getActivity(MapsActivity.this, 0, intent, 0);
+                                            //notification.addAction(R.drawable.ic_sms_black_24dp,"Yes",pendingIntent);
+                                            notification.setContentIntent(pendingIntent);
+
+
+                                            notification.setAutoCancel(true);
+                                            NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(MapsActivity.this);
+                                            notificationManagerCompat.notify(notificationid, notification.build());
+                                        }
+
 
                                 }
                     LatLng LatLng = new LatLng(latitude,longitude);
@@ -363,9 +406,9 @@ public class MapsActivity extends FragmentActivity implements NavigationView.OnN
 
 
                 }
-                string1.setText("Sewers in normal condition "+normal);
-                string2.setText("Sewers in informative condition "+informative);
-                string3.setText("Sewers in critical condition "+critical);
+                string1.setText("Sewers in normal condition: "+normal);
+                string2.setText("Sewers in informative condition: "+informative);
+                string3.setText("Sewers in critical condition: "+critical);
 
             }
 
@@ -400,6 +443,7 @@ public class MapsActivity extends FragmentActivity implements NavigationView.OnN
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
+
         locationRequest = new LocationRequest();
         locationRequest.setInterval(1000);
         locationRequest.setFastestInterval(1000);
