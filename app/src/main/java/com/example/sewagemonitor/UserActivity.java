@@ -6,14 +6,16 @@ public class UserActivity  {
     private double Wlevel;
     private double Latitude;
     private double Longitude;
+    private double Battery;
 
     public UserActivity() {
     }
 
-    public UserActivity(double wlevel, double latitude, double longitude) {
+    public UserActivity(double wlevel, double latitude, double longitude, double battery) {
         this.Wlevel= wlevel;
         this.Latitude = latitude;
         this.Longitude = longitude;
+        this.Battery=battery;
     }
 
     public double getWlevel() {
@@ -38,6 +40,14 @@ public class UserActivity  {
 
     public void setLongitude(double longitude) {
         this.Longitude = longitude;
+    }
+
+    public double getBattery() {
+        return Battery;
+    }
+
+    public void setBattery(double battery) {
+        this.Battery = battery;
     }
 }
 

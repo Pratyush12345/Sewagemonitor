@@ -1,17 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
     android:background="@drawable/fade"
     android:orientation="vertical"
-
-    android:paddingTop="120dp"
     android:paddingLeft="30dp"
+    android:gravity="center"
     android:paddingRight="30dp"
-    >
+    tools:context=".MainActivity">
 
 
     <TextView
@@ -26,37 +23,37 @@
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
         android:layout_marginTop="10dp"
-        >
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+
         <EditText
+            android:id="@+id/user"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Username"
             android:ems="10"
+            android:hint="Username"
             android:inputType="textPersonName"
-            android:textSize="22sp"
-            android:id="@+id/user"/>
+            android:textSize="22sp" />
 
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
         android:layout_marginTop="20dp"
-        >
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+
         <EditText
+            android:id="@+id/pass"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Password"
             android:ems="10"
+            android:hint="Password"
             android:inputType="numberPassword"
-            android:textSize="22sp"
 
-            android:id="@+id/pass"/>
+            android:textSize="22sp" />
 
     </android.support.design.widget.TextInputLayout>
 
@@ -65,12 +62,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
-        android:textColor="#ffffff"
-        android:shadowColor="#007C49"
-        android:textSize="25sp"
-        android:text="Login"
         android:background="@drawable/button_rounder"
-        />
+        android:shadowColor="#007C49"
+        android:text="Login"
+        android:textColor="#ffffff"
+        android:textSize="25sp" />
 
 
 </LinearLayout>
