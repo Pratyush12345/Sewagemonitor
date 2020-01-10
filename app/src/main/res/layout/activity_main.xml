@@ -19,6 +19,24 @@
         android:textAlignment="center"
         android:textColor="@color/colorAccent"
         android:textSize="15sp" />
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+
+        <EditText
+            android:id="@+id/nameOfUser"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Name"
+            android:inputType="textPersonName"
+            android:textSize="22sp" />
+
+    </android.support.design.widget.TextInputLayout>
+
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
@@ -32,7 +50,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Username"
+            android:hint="Email Id"
             android:inputType="textPersonName"
             android:textSize="22sp" />
 

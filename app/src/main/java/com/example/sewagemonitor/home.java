@@ -72,7 +72,7 @@ import static android.content.Context.NOTIFICATION_SERVICE;
 import static com.example.sewagemonitor.MapsActivity.REQUEST_LOCATION_CODE_;
 
 
-    public class home extends Fragment implements OnMapReadyCallback,
+public class home extends Fragment implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
@@ -84,15 +84,15 @@ import static com.example.sewagemonitor.MapsActivity.REQUEST_LOCATION_CODE_;
     private SupportMapFragment mapFragment;
     private GoogleApiClient client;
     private LocationRequest locationRequest;
-    private Location lastLocation,mylocation;
+    private Location lastLocation, mylocation;
     private Marker currentLoactionMarker;
     public static final int REQUEST_LOCATION_CODE_ = 99;
-    private final static int REQUEST_CHECK_SETTINGS_GPS=0x1;
-    private final static int REQUEST_ID_MULTIPLE_PERMISSIONS=0x2;
+    private final static int REQUEST_CHECK_SETTINGS_GPS = 0x1;
+    private final static int REQUEST_ID_MULTIPLE_PERMISSIONS = 0x2;
 
-    private int critical=0,informative=0,normal=0;
-    private static final int  notificationid=1223;
-    private final String channel_id="personal notification";
+    private int critical = 0, informative = 0, normal = 0;
+    private static final int notificationid = 1223;
+    private final String channel_id = "personal notification";
     NotificationCompat.Builder notification;
 
     Context context;
@@ -108,13 +108,12 @@ import static com.example.sewagemonitor.MapsActivity.REQUEST_LOCATION_CODE_;
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
 
-         mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-        if(mapFragment==null)
-        {
-            FragmentManager fr=getFragmentManager();
-            FragmentTransaction ft=fr.beginTransaction();
-            mapFragment=SupportMapFragment.newInstance();
-            ft.replace(R.id.map,mapFragment).commit();
+        mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        if (mapFragment == null) {
+            FragmentManager fr = getFragmentManager();
+            FragmentTransaction ft = fr.beginTransaction();
+            mapFragment = SupportMapFragment.newInstance();
+            ft.replace(R.id.map, mapFragment).commit();
         }
         mapFragment.getMapAsync(this);
 
@@ -125,34 +124,31 @@ import static com.example.sewagemonitor.MapsActivity.REQUEST_LOCATION_CODE_;
     }
 
 
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        notification = new NotificationCompat.Builder(context,channel_id);
+        notification = new NotificationCompat.Builder(context, channel_id);
 
 
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode)
-        {
+        switch (requestCode) {
             case REQUEST_LOCATION_CODE_:
-                if(grantResults.length > 0 && grantResults[0]==PackageManager.PERMISSION_GRANTED)
-                {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     //permission granted
-                    if(ContextCompat.checkSelfPermission(context,Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-                    {
+                    if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-                        if(client==null)
-                        {   getuplocation();
+                        if (client == null) {
+                            getuplocation();
                             buildGoogleApiClient();
                         }
-                    }mMap.setMyLocationEnabled(true);
-                }
-                else //permission denied
+                    }
+                    mMap.setMyLocationEnabled(true);
+                } else //permission denied
                 {
-                    Toast.makeText(context,"Permission denied", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "Permission denied", Toast.LENGTH_LONG).show();
                 }
                 //return;
 
@@ -165,21 +161,22 @@ import static com.example.sewagemonitor.MapsActivity.REQUEST_LOCATION_CODE_;
         mMap = googleMap;
 
 
-        if(ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             buildGoogleApiClient();
             mMap.setMyLocationEnabled(false);
         }
 
     }
-    protected synchronized void buildGoogleApiClient()
-    {
-        client =new GoogleApiClient.Builder(context)
+
+    protected synchronized void buildGoogleApiClient() {
+        client = new GoogleApiClient.Builder(context)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
         client.connect();
     }
+
     @Override
     public void onLocationChanged(Location location) {
 
@@ -190,70 +187,73 @@ import static com.example.sewagemonitor.MapsActivity.REQUEST_LOCATION_CODE_;
         }
 
 
-        if(client!=null)
-        {
+        if (client != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(client, this);
         }
         monitoring();
 
 
     }
-    public void monitoring(){
+
+    public void monitoring() {
 
         user = new UserActivity();
-        database=FirebaseDatabase.getInstance();
-        mRef=database.getReference("Jodhpur");
+        database = FirebaseDatabase.getInstance();
+        mRef = database.getReference("Jodhpur");
         mRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                normal=0;
-                informative=0;
-                critical=0;
+                normal = 0;
+                informative = 0;
+                critical = 0;
                 mMap.clear();
-                for(DataSnapshot ds: dataSnapshot.getChildren())  {
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
 
                     user = ds.getValue(UserActivity.class);
                     latitude = user.getLatitude();
                     longitude = user.getLongitude();
-                    wlevel= user.getWlevel();
+                    wlevel = user.getWlevel();
 
-                    if(wlevel==1) {
+                    if (wlevel == 1) {
                         MarkerOptions markerOptions1 = new MarkerOptions();
-                        markerOptions1.position(new LatLng(latitude,longitude));
-                        markerOptions1.title("Normal");
+                        markerOptions1.position(new LatLng(latitude, longitude));
+                        markerOptions1.title(ds.getKey());
                         markerOptions1.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                        //markerOptions1.snippet("level = "+wlevel);
+                        markerOptions1.snippet("Normal level");
                         mMap.addMarker(markerOptions1);
                         normal++;
 
 
-                    }
-                    else if(wlevel==2) {
+                    } else if (wlevel == 2) {
                         MarkerOptions markerOptions2 = new MarkerOptions();
-                        markerOptions2.position(new LatLng(latitude,longitude));
-                        markerOptions2.title("Informative");
+                        markerOptions2.position(new LatLng(latitude, longitude));
+                        markerOptions2.title(ds.getKey());
                         markerOptions2.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
-                        //markerOptions2.snippet("level = "+wlevel);
+                        markerOptions2.snippet("Informative level");
                         mMap.addMarker(markerOptions2);
                         informative++;
 
 
-                    }
-                    else if(wlevel==3) {
+                    } else if (wlevel == 3) {
 
                         MarkerOptions markerOptions3 = new MarkerOptions();
-                        markerOptions3.position(new LatLng(latitude,longitude));
-                        markerOptions3.title("Critical");
+                        markerOptions3.position(new LatLng(latitude, longitude));
+                        markerOptions3.title(ds.getKey());
                         markerOptions3.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-                        //markerOptions3.snippet("level = "+wlevel);
+                        markerOptions3.snippet("Critical level");
                         mMap.addMarker(markerOptions3);
                         critical++;
 
 
-
-
+                    } else if (wlevel == 0) {
+                        MarkerOptions markerOptions0 = new MarkerOptions();
+                        markerOptions0.position(new LatLng(latitude, longitude));
+                        markerOptions0.title(ds.getKey());
+                        markerOptions0.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
+                        markerOptions0.snippet("Ground level");
+                        mMap.addMarker(markerOptions0);
                     }
-                    LatLng LatLng = new LatLng(latitude,longitude);
+                    LatLng LatLng = new LatLng(latitude, longitude);
                     mMap.moveCamera(CameraUpdateFactory.newLatLng(LatLng));
                     mMap.animateCamera(CameraUpdateFactory.zoomBy(9));
 
@@ -263,15 +263,11 @@ import static com.example.sewagemonitor.MapsActivity.REQUEST_LOCATION_CODE_;
             }
 
 
-
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
         });
-
-
 
 
     }
@@ -280,22 +276,22 @@ import static com.example.sewagemonitor.MapsActivity.REQUEST_LOCATION_CODE_;
     public void onConnected(@Nullable Bundle bundle) {
         setUplocation();
     }
+
     private void setUplocation() {
-        if(android.support.v4.app.ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)!=PackageManager.PERMISSION_GRANTED
-                && android.support.v4.app.ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)!=PackageManager.PERMISSION_GRANTED )
-        {
+        if (android.support.v4.app.ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && android.support.v4.app.ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestRuntimePermission();
-        }
-        else{
+        } else {
             getuplocation();
         }
     }
+
     private void requestRuntimePermission() {
-        android.support.v4.app.ActivityCompat.requestPermissions(getActivity(),new String[]
+        android.support.v4.app.ActivityCompat.requestPermissions(getActivity(), new String[]
                 {
                         Manifest.permission.ACCESS_COARSE_LOCATION,
                         Manifest.permission.ACCESS_FINE_LOCATION
-                },REQUEST_LOCATION_CODE_);
+                }, REQUEST_LOCATION_CODE_);
     }
 
     @Override
@@ -308,13 +304,13 @@ import static com.example.sewagemonitor.MapsActivity.REQUEST_LOCATION_CODE_;
 
     }
 
-    private void getuplocation(){
-        if(client!=null) {
+    private void getuplocation() {
+        if (client != null) {
             if (client.isConnected()) {
                 int permissionLocation = ContextCompat.checkSelfPermission(context,
                         Manifest.permission.ACCESS_FINE_LOCATION);
                 if (permissionLocation == PackageManager.PERMISSION_GRANTED) {
-                    mylocation =                     LocationServices.FusedLocationApi.getLastLocation(client);
+                    mylocation = LocationServices.FusedLocationApi.getLastLocation(client);
                     LocationRequest locationRequest = new LocationRequest();
                     locationRequest.setInterval(3000);
                     locationRequest.setFastestInterval(3000);

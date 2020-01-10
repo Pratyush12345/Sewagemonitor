@@ -13,8 +13,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.Toolbar;
 
 import com.firebase.client.Firebase;
@@ -40,6 +42,9 @@ public class address_list extends Fragment {
     private int position,counter=0;
     Context context;
     private TextView text1,text2;
+    private Button mUpdateButton;
+    private String DeviceName="";
+
 
     @Override
     public void onAttach(Context context) {
@@ -64,6 +69,7 @@ public class address_list extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         text1=view.findViewById(R.id.addresstext);
         text2=view.findViewById(R.id.leveltext);
+        mUpdateButton=view.findViewById(R.id.Battery_Update);
 
         user=new UserActivity();
         database= FirebaseDatabase.getInstance();
@@ -80,6 +86,7 @@ public class address_list extends Fragment {
 
                 if(counter==position){
                     String city = "";
+                    DeviceName=ds.getKey();
                     Geocoder geocoder = new Geocoder(context, Locale.getDefault());
                     try {
                         List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
@@ -112,6 +119,14 @@ public class address_list extends Fragment {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
+            }
+        });
+        mUpdateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mRef.child(DeviceName).child("Battery").setValue(100);
+                mUpdateButton.setEnabled(false);
+                Toast.makeText(context, "Battery Updated Successfully", Toast.LENGTH_SHORT).show();
             }
         });
     }

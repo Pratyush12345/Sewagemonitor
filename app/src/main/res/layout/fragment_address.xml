@@ -26,4 +26,16 @@
         android:gravity="center"
         ></TextView>
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/Battery_Update"
+        android:text="Reset Battery"
+        android:padding="12dp"
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/leveltext"
+        android:layout_centerHorizontal="true"
+        />
+
+
 </RelativeLayout>

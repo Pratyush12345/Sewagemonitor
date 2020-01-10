@@ -19,7 +19,7 @@ import android.widget.Button;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class statistics extends Fragment {
+public class healthReport extends Fragment {
 
     private Button ToSpredSheet;
 
@@ -32,7 +32,7 @@ public class statistics extends Fragment {
     }
 
 
-    public statistics() {
+    public healthReport() {
         // Required empty public constructor
     }
 
@@ -49,12 +49,12 @@ public class statistics extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
 
-        ToSpredSheet=view.findViewById(R.id.Statistics_button);
+        ToSpredSheet=view.findViewById(R.id.healthReport_button);
 
         ToSpredSheet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent browseToSheet=new Intent(Intent.ACTION_VIEW, Uri.parse("https://docs.google.com/spreadsheets/d/1sRP8TSPBC5__6zZJD0du2Y9dKpaSms4X9k8_5JARrqo/edit?usp=sharing"));
+                Intent browseToSheet=new Intent(Intent.ACTION_VIEW, Uri.parse("https://docs.google.com/spreadsheets/d/1iQOqabuCeGCVBhlINeGHQbWHEEb20hQsaBysybOcwjA/edit?usp=sharing"));
                 startActivity(browseToSheet);
             }
         });
