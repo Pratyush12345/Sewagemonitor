@@ -290,6 +290,12 @@ public class MapsActivity extends FragmentActivity implements NavigationView.OnN
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new battery_list()).commit();
                 flag=1;
                 break;
+            case R.id.nav_health:
+                Toast.makeText(this,"Health Report",Toast.LENGTH_SHORT).show();
+                toolbar.setTitle("Health Report");
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new healthReport()).commit();
+                flag=1;
+                break;
         }
         drawer.closeDrawer(GravityCompat.START);
         return true;
